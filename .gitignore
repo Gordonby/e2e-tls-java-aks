@@ -39,3 +39,4 @@ build/
 *.pfx
 my.yml
 
+openjdk-demo-service/testlocal.ps1

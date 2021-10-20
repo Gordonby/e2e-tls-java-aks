@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "openjdk-demo-service.fullname" . }}
+  labels:
+    app: {{ include "openjdk-demo-service.fullname" . }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "openjdk-demo-service.fullname" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "openjdk-demo-service.fullname" . }}
+    spec:
+      volumes:
+        - name: openjdk-demo-cert-mount
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: "azure-{{ .Values.csisecrets.vaultname }}"
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: 8080
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          env:
+            {{- toYaml .Values.env | nindent 12 }}
+          volumeMounts:   
+            - name: openjdk-demo-cert-mount
+              mountPath: "/cert"
+              readOnly: true

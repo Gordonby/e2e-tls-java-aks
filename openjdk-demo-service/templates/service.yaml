@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: "{{ include "openjdk-demo-service.fullname" . }}-service"
+  labels:
+    app: {{ include "openjdk-demo-service.fullname" . }}
+spec:
+  selector:
+    app: {{ include "openjdk-demo-service.fullname" . }} #{{- include "openjdk-demo-service.selectorLabels" . | nindent 4 }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: {{ .Values.service.targetport }}
+      protocol: TCP
+      name: https
