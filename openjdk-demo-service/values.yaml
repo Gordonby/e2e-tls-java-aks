@@ -4,7 +4,7 @@ csisecrets:
   clientId: ""
 
 dnsname: openjdk-demo.local
-
+kvcertsecretname: openjdk-demo-service
 replicaCount: 1
 
 image:
