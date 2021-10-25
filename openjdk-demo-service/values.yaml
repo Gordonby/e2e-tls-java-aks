@@ -8,7 +8,7 @@ kvcertsecretname: openjdk-demo-service
 replicaCount: 1
 
 image:
-  repository: crAksByo2uoerzqes7aly.azurecr.io/openjdk-demo
+  repository: gordonbmsft/openjdk-demo
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
