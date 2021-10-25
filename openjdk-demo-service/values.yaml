@@ -1,6 +1,6 @@
 csisecrets:
-  vaultname: "kv-AksByo"
-  tenantId: "72f988bf-86f1-41af-91ab-2d7cd011db47"
+  vaultname: ""
+  tenantId: ""
   clientId: ""
 
 dnsname: openjdk-demo.local
@@ -8,7 +8,7 @@ dnsname: openjdk-demo.local
 replicaCount: 1
 
 image:
-  repository: crAksByo2uoerzqes7aly.azurecr.io/openjdk-demo
+  repository: gordonbmsft/openjdk-demo
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
@@ -20,28 +20,6 @@ service:
   type: ClusterIP
   port: 8443
   targetPort: 8080
-
-ingress:
-  enabled: false
-  annotations:
-    kubernetes.io/ingress.class: azure/application-gateway
-    cert-manager.io/cluster-issuer: "letsencrypt-prod"
-    kubernetes.io/tls-acme: "true"
-    cert-manager.io/acme-challenge-type: "http01"
-    appgw.ingress.kubernetes.io/use-private-ip: "false"
-    appgw.ingress.kubernetes.io/ssl-redirect: "true"
-    appgw.ingress.kubernetes.io/backend-protocol: "https"
-    appgw.ingress.kubernetes.io/backend-hostname: "openjdk-demo-service"
-    appgw.ingress.kubernetes.io/appgw-trusted-root-certificate: "openjdk-demo-service"
-  hosts:
-    - host: openjdk-demo.local
-      paths:
-        - path: /
-          pathType: Prefix
-  tls:
-    - secretName: tls-secret
-      hosts:
-        - openjdk-demo.local
 
 resources:
   limits:

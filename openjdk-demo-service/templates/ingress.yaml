@@ -1,46 +1,33 @@
-{{- if .Values.ingress.enabled -}}
 {{- $fullName := include "openjdk-demo-service.fullname" . -}}
-{{- $svcPort := .Values.service.port -}}
-
-# {{- if and .Values.ingress.className (not (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion)) }}
-#   {{- if not (hasKey .Values.ingress.annotations "kubernetes.io/ingress.class") }}
-#   {{- $_ := set .Values.ingress.annotations "kubernetes.io/ingress.class" .Values.ingress.className}}
-#   {{- end }}
-# {{- end }}
-
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: "{{ $fullName }}-ingress"
+  name: {{ $fullName }}-ingress
   labels:
     app: {{ include "openjdk-demo-service.fullname" . }}
-  {{- with .Values.ingress.annotations }}
   annotations:
-    {{- toYaml . | nindent 4 }}
-  {{- end }}
+    kubernetes.io/ingress.class: azure/application-gateway
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    kubernetes.io/tls-acme: "true"
+    cert-manager.io/acme-challenge-type: "http01"
+    appgw.ingress.kubernetes.io/use-private-ip: "false"
+    appgw.ingress.kubernetes.io/ssl-redirect: "true"
+    appgw.ingress.kubernetes.io/backend-protocol: "https"
+    appgw.ingress.kubernetes.io/backend-hostname: "openjdk-demo-service"
+    appgw.ingress.kubernetes.io/appgw-trusted-root-certificate: "openjdk-demo-service"
 spec:
-  {{- if and .Values.ingress.className (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion) }}
-  ingressClassName: {{ .Values.ingress.className }}
-  {{- end }}
   tls:
     - hosts:
-        {{- range .hosts }}
-        - {{ . | quote }}
-        {{- end }}
-      secretName: {{ .secretName }}
+        - {{ .Values.dnsname }}
+      secretName: tls-secret
   rules:
-    {{- range .Values.ingress.hosts }}
-    - host: {{ .host | quote }}
+    - host: {{ .Values.dnsname }}
       http:
         paths:
-          {{- range .paths }}
-          - path: {{ .path }}
-            pathType: {{ .pathType }}
+          - path: /
+            pathType: Prefix
             backend:
               service:
-                name: "{{ $fullName }}-service"
+                name: {{ $fullName }}-service
                 port:
-                  number: {{ $svcPort }}
-          {{- end }}
-    {{- end }}
-{{- end }}
+                  name: https
