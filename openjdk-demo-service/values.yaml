@@ -7,6 +7,11 @@ dnsname: openjdk-demo.local
 kvcertsecretname: openjdk-demo-service
 replicaCount: 1
 
+letsEncrypt:
+  enabled: true
+  issuer: "letsencrypt-staging"
+  secretname: "openjdk-tls"
+
 image:
   repository: gordonbmsft/openjdk-demo
   pullPolicy: Always

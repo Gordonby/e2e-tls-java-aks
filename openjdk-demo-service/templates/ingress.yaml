@@ -7,7 +7,7 @@ metadata:
     app: {{ include "openjdk-demo-service.fullname" . }}
   annotations:
     kubernetes.io/ingress.class: azure/application-gateway
-    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    cert-manager.io/cluster-issuer: {{ .Values.letsEncrypt.issuer }}
     kubernetes.io/tls-acme: "true"
     cert-manager.io/acme-challenge-type: "http01"
     appgw.ingress.kubernetes.io/use-private-ip: "false"
@@ -19,7 +19,7 @@ spec:
   tls:
     - hosts:
         - {{ .Values.dnsname }}
-      secretName: tls-secret
+      secretName: {{ .Values.letsEncrypt.secretname }}
   rules:
     - host: {{ .Values.dnsname }}
       http:
